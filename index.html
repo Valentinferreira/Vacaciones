@@ -120,7 +120,7 @@
 
         .resumen {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             margin-bottom: 40px;
         }
@@ -325,13 +325,18 @@
             </div>
 
             <div class="resumen-card">
+                <p>Total de la lista de compras</p>
+                <h3 id="totalCompras">$ 0</h3>
+            </div>
+
+            <div class="resumen-card">
                 <p>Viajeros</p>
                 <h3>5 amigos</h3>
             </div>
 
             <div class="resumen-card">
                 <p>Destino</p>
-                <h3>Piriapolis</h3>
+                <h3>Piriápolis</h3>
             </div>
         </section>
 
@@ -346,7 +351,7 @@
                 <span class="flecha">→</span>
             </a>
 
-           <a class="opcion" href="listaDeCompra.html">
+           <a class="opcion" href="compras.html">
                 <div class="icono">▤</div>
                 <h3>Lista de compras</h3>
                 <p>Agregá alimentos, bebidas y suministros para el viaje.</p>
@@ -394,7 +399,50 @@
         La Escapada · Enero 2027 · Hecho para disfrutar entre amigos.
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // Conexión a Supabase: los datos se comparten entre los dispositivos.
+        const SUPABASE_URL = "https://yjtyzikqcikkcbhpkqeq.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_TZeoCfMQ0hDTVLQn75EvPg_w3EApzkZ";
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const formatoPesos = new Intl.NumberFormat("es-UY", {
+            style: "currency",
+            currency: "UYU",
+            maximumFractionDigits: 2
+        });
+
+        async function actualizarResumenFinanciero() {
+            const fondo = document.getElementById("fondo");
+            const totalCompras = document.getElementById("totalCompras");
+
+            try {
+                const { data: aportes, error: errorAportes } = await db
+                    .from("aportes")
+                    .select("monto");
+                if (errorAportes) throw errorAportes;
+
+                const totalAportes = (aportes || []).reduce(function(total, aporte) {
+                    return total + Number(aporte.monto || 0);
+                }, 0);
+                fondo.textContent = formatoPesos.format(totalAportes);
+
+                const { data: compras, error: errorCompras } = await db
+                    .from("compras")
+                    .select("cantidad, precio_unitario");
+                if (errorCompras) throw errorCompras;
+
+                const sumaCompras = (compras || []).reduce(function(total, producto) {
+                    return total + Number(producto.cantidad || 0) * Number(producto.precio_unitario || 0);
+                }, 0);
+                totalCompras.textContent = formatoPesos.format(sumaCompras);
+            } catch (error) {
+                console.error("No se pudo actualizar el resumen financiero:", error);
+                fondo.textContent = "No disponible";
+                totalCompras.textContent = "No disponible";
+            }
+        }
+
         // Cuenta regresiva hasta el 7 de enero de 2027.
         function actualizarContador() {
             const destino = new Date("2027-01-07T00:00:00-03:00");
@@ -463,6 +511,8 @@
 
         actualizarContador();
         setInterval(actualizarContador, 1000);
+        actualizarResumenFinanciero();
+        setInterval(actualizarResumenFinanciero, 10000);
     </script>
 
 </body>
