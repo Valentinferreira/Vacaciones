@@ -1,1 +1,467 @@
 
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Escapada | Vacaciones 2027</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #101820;
+            color: #f4f1e9;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 8%;
+            border-bottom: 1px solid #293640;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #78d6bc;
+        }
+
+        .subtitulo {
+            color: #a6b2b8;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .etiqueta {
+            color: #78d6bc;
+            border: 1px solid #35594f;
+            padding: 9px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 45px 25px;
+        }
+
+        .bienvenida {
+            margin-bottom: 30px;
+        }
+
+        .bienvenida h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .bienvenida p {
+            color: #a6b2b8;
+            line-height: 1.6;
+        }
+
+        .cuenta-regresiva {
+            background: linear-gradient(120deg, #214c49, #183a42);
+            border: 1px solid #35635c;
+            border-radius: 18px;
+            padding: 35px;
+            margin-bottom: 25px;
+        }
+
+        .cuenta-regresiva .texto {
+            color: #b9d8d0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .cuenta-regresiva h2 {
+            font-size: 25px;
+            margin-bottom: 25px;
+        }
+
+        .contador {
+            display: flex;
+            gap: 35px;
+            flex-wrap: wrap;
+        }
+
+        .unidad {
+            text-align: center;
+        }
+
+        .unidad .numero {
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .unidad .nombre {
+            display: block;
+            color: #b9d8d0;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .fecha-viaje {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #d0e9e1;
+        }
+
+        .resumen {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .resumen-card {
+            background-color: #19252e;
+            border: 1px solid #2b3943;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .resumen-card p {
+            color: #a6b2b8;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .resumen-card h3 {
+            font-size: 23px;
+        }
+
+        .seccion-titulo {
+            font-size: 21px;
+            margin-bottom: 20px;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .opcion {
+            background-color: #19252e;
+            border: 1px solid #2b3943;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #f4f1e9;
+            text-align: left;
+        }
+
+        .opcion:hover {
+            transform: translateY(-4px);
+            border-color: #78d6bc;
+            background-color: #203139;
+        }
+
+        .icono {
+            font-size: 28px;
+            margin-bottom: 22px;
+        }
+
+        .opcion h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .opcion p {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #a6b2b8;
+        }
+
+        .flecha {
+            display: block;
+            color: #78d6bc;
+            font-size: 22px;
+            margin-top: 22px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #788992;
+            font-size: 12px;
+        }
+
+        .pantalla {
+            display: none;
+            margin-top: 25px;
+            padding: 25px;
+            background: #19252e;
+            border: 1px solid #2b3943;
+            border-radius: 15px;
+        }
+
+        .pantalla h2 {
+            margin-bottom: 15px;
+        }
+
+        .pantalla p {
+            color: #a6b2b8;
+            line-height: 1.6;
+        }
+
+        .boton-volver {
+            margin-top: 20px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #78d6bc;
+            color: #101820;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            header {
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .etiqueta {
+                font-size: 11px;
+            }
+
+            main {
+                padding: 30px 18px;
+            }
+
+            .bienvenida h1 {
+                font-size: 26px;
+            }
+
+            .cuenta-regresiva {
+                padding: 25px 20px;
+            }
+
+            .contador {
+                gap: 20px;
+            }
+
+            .unidad .numero {
+                font-size: 30px;
+            }
+
+            .resumen,
+            .menu {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <div class="logo">✳ La Escapada</div>
+            <div class="subtitulo">Vacaciones entre amigos</div>
+        </div>
+
+        <div class="etiqueta">VIAJE 2027</div>
+    </header>
+
+    <main>
+
+        <section class="bienvenida">
+            <h1>El viaje empieza acá.</h1>
+            <p>
+                Organicemos las cuentas, las compras y todos los detalles
+                para que los cinco disfrutemos de las vacaciones.
+            </p>
+        </section>
+
+        <section class="cuenta-regresiva">
+            <p class="texto">Próxima aventura</p>
+            <h2>Faltan...</h2>
+
+            <div class="contador">
+                <div class="unidad">
+                    <span class="numero" id="dias">000</span>
+                    <span class="nombre">DÍAS</span>
+                </div>
+
+                <div class="unidad">
+                    <span class="numero" id="horas">00</span>
+                    <span class="nombre">HORAS</span>
+                </div>
+
+                <div class="unidad">
+                    <span class="numero" id="minutos">00</span>
+                    <span class="nombre">MINUTOS</span>
+                </div>
+
+                <div class="unidad">
+                    <span class="numero" id="segundos">00</span>
+                    <span class="nombre">SEGUNDOS</span>
+                </div>
+            </div>
+
+            <p class="fecha-viaje">✈ 7 de enero de 2027</p>
+        </section>
+
+        <section class="resumen">
+            <div class="resumen-card">
+                <p>Fondo común</p>
+                <h3 id="fondo">$ 0</h3>
+            </div>
+
+            <div class="resumen-card">
+                <p>Viajeros</p>
+                <h3>5 amigos</h3>
+            </div>
+
+            <div class="resumen-card">
+                <p>Destino</p>
+                <h3>Por definir</h3>
+            </div>
+        </section>
+
+        <h2 class="seccion-titulo">Administrar el viaje</h2>
+
+        <section class="menu">
+            <button class="opcion" onclick="mostrarPantalla('aportes')">
+                <div class="icono">↗</div>
+                <h3>Registrar aporte</h3>
+                <p>Registrá cuánto dinero aporta cada amigo al fondo común.</p>
+                <span class="flecha">→</span>
+            </button>
+
+            <button class="opcion" onclick="mostrarPantalla('compras')">
+                <div class="icono">▤</div>
+                <h3>Lista de compras</h3>
+                <p>Agregá alimentos, bebidas y suministros para el viaje.</p>
+                <span class="flecha">→</span>
+            </button>
+
+            <button class="opcion" onclick="mostrarPantalla('perfiles')">
+                <div class="icono">♙</div>
+                <h3>Perfiles</h3>
+                <p>Personalizá los nombres y las fotos de los cinco viajeros.</p>
+                <span class="flecha">→</span>
+            </button>
+        </section>
+
+        <section class="pantalla" id="aportes">
+            <h2>Registrar aporte</h2>
+            <p>
+                Acá vamos a poder seleccionar al amigo, ingresar el monto
+                aportado y consultar el historial de movimientos.
+            </p>
+            <button class="boton-volver" onclick="volver()">Volver al inicio</button>
+        </section>
+
+        <section class="pantalla" id="compras">
+            <h2>Lista de compras</h2>
+            <p>
+                Acá vamos a poder agregar productos, cantidades y precios,
+                además de marcar los artículos que ya compramos.
+            </p>
+            <button class="boton-volver" onclick="volver()">Volver al inicio</button>
+        </section>
+
+        <section class="pantalla" id="perfiles">
+            <h2>Perfiles de los viajeros</h2>
+            <p>
+                Acá vamos a poder editar los nombres, subir fotos de perfil
+                y personalizar los datos de cada uno de los cinco amigos.
+            </p>
+            <button class="boton-volver" onclick="volver()">Volver al inicio</button>
+        </section>
+
+    </main>
+
+    <footer>
+        La Escapada · Enero 2027 · Hecho para disfrutar entre amigos.
+    </footer>
+
+    <script>
+        // Cuenta regresiva hasta el 7 de enero de 2027.
+        function actualizarContador() {
+            const destino = new Date("2027-01-07T00:00:00-03:00");
+            const ahora = new Date();
+            const diferencia = destino.getTime() - ahora.getTime();
+
+            if (diferencia <= 0) {
+                document.getElementById("dias").textContent = "000";
+                document.getElementById("horas").textContent = "00";
+                document.getElementById("minutos").textContent = "00";
+                document.getElementById("segundos").textContent = "00";
+                document.querySelector(".cuenta-regresiva h2").textContent =
+                    "¡Llegó el día del viaje!";
+                return;
+            }
+
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor(
+                (diferencia / (1000 * 60 * 60)) % 24
+            );
+            const minutos = Math.floor(
+                (diferencia / (1000 * 60)) % 60
+            );
+            const segundos = Math.floor(
+                (diferencia / 1000) % 60
+            );
+
+            document.getElementById("dias").textContent =
+                String(dias).padStart(3, "0");
+
+            document.getElementById("horas").textContent =
+                String(horas).padStart(2, "0");
+
+            document.getElementById("minutos").textContent =
+                String(minutos).padStart(2, "0");
+
+            document.getElementById("segundos").textContent =
+                String(segundos).padStart(2, "0");
+        }
+
+        // Mostrar la sección seleccionada.
+        function mostrarPantalla(id) {
+            document.getElementById("aportes").style.display = "none";
+            document.getElementById("compras").style.display = "none";
+            document.getElementById("perfiles").style.display = "none";
+
+            document.getElementById(id).style.display = "block";
+
+            document.getElementById(id).scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+
+        // Volver a la vista principal.
+        function volver() {
+            document.getElementById("aportes").style.display = "none";
+            document.getElementById("compras").style.display = "none";
+            document.getElementById("perfiles").style.display = "none";
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+
+        actualizarContador();
+        setInterval(actualizarContador, 1000);
+    </script>
+
+</body>
+</html>
