@@ -499,11 +499,16 @@
         La Escapada · Enero 2027
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const CLAVE = "laEscapadaListaCompras";
+        const SUPABASE_URL = "https://yjtyzikqcikkcbhpkqeq.supabase.co";
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TZeoCfMQ0hDTVLQn75EvPg_w3EApzkZ";
+        const { createClient } = window.supabase;
+        const db = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
         let productos = [];
         let productoEditando = null;
+        let cargando = false;
 
         const formulario = document.getElementById("formulario");
         const nombre = document.getElementById("nombre");
@@ -511,10 +516,12 @@
         const contenido = document.getElementById("contenido");
         const unidad = document.getElementById("unidad");
         const precio = document.getElementById("precio");
-
         const listaProductos = document.getElementById("listaProductos");
         const vacio = document.getElementById("vacio");
         const busqueda = document.getElementById("busqueda");
+        const aviso = document.querySelector(".aviso");
+
+        aviso.textContent = "La lista se comparte entre los dispositivos del grupo. Los cambios se sincronizan automáticamente.";
 
         const formatoPesos = new Intl.NumberFormat("es-UY", {
             style: "currency",
@@ -522,40 +529,41 @@
             maximumFractionDigits: 2
         });
 
-        try {
-            const datosGuardados = localStorage.getItem(CLAVE);
-
-            if (datosGuardados) {
-                const datos = JSON.parse(datosGuardados);
-
-                if (
-                    Array.isArray(datos) &&
-                    datos.every(function(producto) {
-                        return producto &&
-                            typeof producto.id === "string" &&
-                            typeof producto.nombre === "string" &&
-                            Number.isFinite(producto.cantidad) &&
-                            Number.isFinite(producto.contenido) &&
-                            Number.isFinite(producto.precio) &&
-                            typeof producto.unidad === "string" &&
-                            typeof producto.comprado === "boolean";
-                    })
-                ) {
-                    productos = datos;
-                }
-            }
-        } catch (error) {
-            alert("No se pudieron cargar los productos guardados.");
+        function mostrarError(texto) {
+            alert(texto);
         }
 
-        function guardarDatos() {
-            try {
-                localStorage.setItem(CLAVE, JSON.stringify(productos));
-                return true;
-            } catch (error) {
-                alert("No se pudieron guardar los cambios en este navegador.");
-                return false;
+        async function cargarProductos(mostrarErrorSiFalla = true) {
+            if (cargando) return;
+            cargando = true;
+
+            const { data, error } = await db
+                .from("compras")
+                .select("*")
+                .order("creado_en", { ascending: false });
+
+            cargando = false;
+
+            if (error) {
+                if (mostrarErrorSiFalla) {
+                    mostrarError("No se pudo cargar la lista compartida. Revisá la conexión y los permisos de la tabla compras. Detalle: " + error.message);
+                }
+                return;
             }
+
+            productos = data.map(function(fila) {
+                return {
+                    id: fila.id,
+                    nombre: fila.nombre,
+                    cantidad: Number(fila.cantidad),
+                    contenido: Number(fila.contenido || 0),
+                    unidad: fila.unidad || "Sin especificar",
+                    precio: Number(fila.precio_unitario),
+                    comprado: Boolean(fila.comprado)
+                };
+            });
+
+            mostrarProductos();
         }
 
         function actualizarResumen() {
@@ -564,25 +572,16 @@
 
             productos.forEach(function(producto) {
                 total += producto.cantidad * producto.precio;
-
-                if (producto.comprado) {
-                    comprados++;
-                }
+                if (producto.comprado) comprados++;
             });
 
-            document.getElementById("costoTotal").textContent =
-                formatoPesos.format(total);
-
-            document.getElementById("cantidadProductos").textContent =
-                productos.length;
-
-            document.getElementById("cantidadComprados").textContent =
-                comprados + " de " + productos.length;
+            document.getElementById("costoTotal").textContent = formatoPesos.format(total);
+            document.getElementById("cantidadProductos").textContent = productos.length;
+            document.getElementById("cantidadComprados").textContent = comprados + " de " + productos.length;
         }
 
         function mostrarProductos() {
             listaProductos.replaceChildren();
-
             const texto = busqueda.value.trim().toLowerCase();
 
             const filtrados = productos.filter(function(producto) {
@@ -591,71 +590,51 @@
 
             filtrados.forEach(function(producto) {
                 const fila = document.createElement("tr");
+                if (producto.comprado) fila.classList.add("comprado");
 
-                if (producto.comprado) {
-                    fila.classList.add("comprado");
-                }
-
-                function crearCelda(texto) {
+                function crearCelda(textoCelda) {
                     const celda = document.createElement("td");
-                    celda.textContent = texto;
+                    celda.textContent = textoCelda;
                     return celda;
                 }
 
                 const celdaNombre = crearCelda(producto.nombre);
                 celdaNombre.classList.add("nombre-producto");
-
                 fila.appendChild(celdaNombre);
                 fila.appendChild(crearCelda(String(producto.cantidad)));
 
                 let textoContenido = "—";
-
-                if (producto.contenido > 0) {
-                    textoContenido =
-                        producto.contenido + " " + producto.unidad;
-                }
-
+                if (producto.contenido > 0) textoContenido = producto.contenido + " " + producto.unidad;
                 fila.appendChild(crearCelda(textoContenido));
 
-                const celdaPrecio = crearCelda(
-                    formatoPesos.format(producto.precio)
-                );
+                const celdaPrecio = crearCelda(formatoPesos.format(producto.precio));
                 celdaPrecio.classList.add("precio");
                 fila.appendChild(celdaPrecio);
 
-                const celdaTotal = crearCelda(
-                    formatoPesos.format(producto.cantidad * producto.precio)
-                );
+                const celdaTotal = crearCelda(formatoPesos.format(producto.cantidad * producto.precio));
                 celdaTotal.classList.add("precio");
                 fila.appendChild(celdaTotal);
 
                 const celdaComprado = document.createElement("td");
                 const etiquetaEstado = document.createElement("label");
                 etiquetaEstado.className = "estado";
-
                 const casilla = document.createElement("input");
                 casilla.type = "checkbox";
                 casilla.checked = producto.comprado;
-                casilla.setAttribute(
-                    "aria-label",
-                    "Marcar " + producto.nombre + " como comprado"
-                );
+                casilla.setAttribute("aria-label", "Marcar " + producto.nombre + " como comprado");
+                casilla.addEventListener("change", async function() {
+                    casilla.disabled = true;
+                    const { error } = await db.from("compras")
+                        .update({ comprado: casilla.checked })
+                        .eq("id", producto.id);
 
-                casilla.addEventListener("change", function() {
-                    const anterior = producto.comprado;
-                    producto.comprado = casilla.checked;
-
-                    if (!guardarDatos()) {
-                        producto.comprado = anterior;
+                    if (error) {
+                        mostrarError("No se pudo actualizar el estado de compra: " + error.message);
                     }
-
-                    mostrarProductos();
+                    await cargarProductos(false);
                 });
 
-                etiquetaEstado.appendChild(casilla);
-                etiquetaEstado.appendChild(
-                    document.createTextNode("Sí")
-                );
+                etiquetaEstado.append(casilla, document.createTextNode("Sí"));
                 celdaComprado.appendChild(etiquetaEstado);
                 fila.appendChild(celdaComprado);
 
@@ -667,7 +646,6 @@
                 botonEditar.className = "boton-mini";
                 botonEditar.textContent = "Editar";
                 botonEditar.type = "button";
-
                 botonEditar.addEventListener("click", function() {
                     editarProducto(producto.id);
                 });
@@ -676,7 +654,6 @@
                 botonEliminar.className = "boton-mini eliminar";
                 botonEliminar.textContent = "Eliminar";
                 botonEliminar.type = "button";
-
                 botonEliminar.addEventListener("click", function() {
                     eliminarProducto(producto.id);
                 });
@@ -684,18 +661,14 @@
                 acciones.append(botonEditar, botonEliminar);
                 celdaAcciones.appendChild(acciones);
                 fila.appendChild(celdaAcciones);
-
                 listaProductos.appendChild(fila);
             });
 
             if (filtrados.length === 0) {
                 vacio.style.display = "block";
-
-                if (productos.length > 0 && texto !== "") {
-                    vacio.textContent = "No se encontraron productos con esa búsqueda.";
-                } else {
-                    vacio.textContent = "Todavía no agregaste productos a la lista.";
-                }
+                vacio.textContent = productos.length > 0 && texto !== ""
+                    ? "No se encontraron productos con esa búsqueda."
+                    : "Todavía no agregaste productos a la lista.";
             } else {
                 vacio.style.display = "none";
             }
@@ -703,165 +676,109 @@
             actualizarResumen();
         }
 
-        formulario.addEventListener("submit", function(evento) {
+        formulario.addEventListener("submit", async function(evento) {
             evento.preventDefault();
 
             const nombreProducto = nombre.value.trim();
             const cantidadProducto = Number(cantidad.value);
-            const contenidoProducto = contenido.value.trim() === ""
-                ? 0
-                : Number(contenido.value);
+            const contenidoProducto = contenido.value.trim() === "" ? 0 : Number(contenido.value);
             const precioProducto = Number(precio.value);
 
-            if (
-                nombreProducto === "" ||
-                !Number.isFinite(cantidadProducto) ||
-                cantidadProducto <= 0 ||
-                !Number.isFinite(contenidoProducto) ||
-                contenidoProducto < 0 ||
-                !Number.isFinite(precioProducto) ||
-                precioProducto < 0
-            ) {
-                alert("Revisá los datos ingresados.");
+            if (nombreProducto === "" || !Number.isFinite(cantidadProducto) || cantidadProducto <= 0 ||
+                !Number.isFinite(contenidoProducto) || contenidoProducto < 0 ||
+                !Number.isFinite(precioProducto) || precioProducto < 0) {
+                mostrarError("Revisá los datos ingresados.");
                 return;
             }
 
-            if (
-                contenidoProducto > 0 &&
-                unidad.value === "Sin especificar"
-            ) {
-                alert("Elegí la unidad de peso o volumen del producto.");
+            if (contenidoProducto > 0 && unidad.value === "Sin especificar") {
+                mostrarError("Elegí la unidad de peso o volumen del producto.");
                 return;
             }
 
-            const producto = {
-                id: productoEditando || (
-                    Date.now().toString() + Math.random().toString(36).slice(2)
-                ),
+            const botonGuardar = document.getElementById("botonGuardar");
+            botonGuardar.disabled = true;
+
+            const datos = {
                 nombre: nombreProducto,
                 cantidad: cantidadProducto,
                 contenido: contenidoProducto,
                 unidad: unidad.value,
-                precio: precioProducto,
-                comprado: false
+                precio_unitario: precioProducto
             };
 
-            let nuevosProductos;
-
-            if (productoEditando) {
-                nuevosProductos = productos.map(function(anterior) {
-                    if (anterior.id === productoEditando) {
-                        producto.comprado = anterior.comprado;
-                        return producto;
-                    }
-
-                    return anterior;
-                });
+            let resultado;
+            if (productoEditando !== null) {
+                resultado = await db.from("compras").update(datos).eq("id", productoEditando);
             } else {
-                nuevosProductos = [...productos, producto];
+                datos.comprado = false;
+                resultado = await db.from("compras").insert(datos);
             }
 
-            const anteriores = productos;
-            productos = nuevosProductos;
+            botonGuardar.disabled = false;
 
-            if (!guardarDatos()) {
-                productos = anteriores;
+            if (resultado.error) {
+                mostrarError("No se pudo guardar el producto. Detalle: " + resultado.error.message);
                 return;
             }
 
             cancelarEdicion();
-            mostrarProductos();
+            await cargarProductos();
         });
 
         function editarProducto(id) {
             const producto = productos.find(function(elemento) {
                 return elemento.id === id;
             });
-
-            if (!producto) {
-                return;
-            }
+            if (!producto) return;
 
             productoEditando = id;
-
             nombre.value = producto.nombre;
             cantidad.value = producto.cantidad;
-            contenido.value = producto.contenido > 0
-                ? producto.contenido
-                : "";
+            contenido.value = producto.contenido > 0 ? producto.contenido : "";
             unidad.value = producto.unidad;
             precio.value = producto.precio;
 
-            document.getElementById("tituloFormulario").textContent =
-                "Editar producto";
-
-            document.getElementById("botonGuardar").textContent =
-                "Guardar cambios";
-
+            document.getElementById("tituloFormulario").textContent = "Editar producto";
+            document.getElementById("botonGuardar").textContent = "Guardar cambios";
             document.getElementById("botonCancelar").hidden = false;
-
-            document.getElementById("panelFormulario").scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+            document.getElementById("panelFormulario").scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
         function cancelarEdicion() {
             formulario.reset();
             productoEditando = null;
-
-            document.getElementById("tituloFormulario").textContent =
-                "Agregar un producto";
-
-            document.getElementById("botonGuardar").textContent =
-                "Agregar a la lista";
-
+            document.getElementById("tituloFormulario").textContent = "Agregar un producto";
+            document.getElementById("botonGuardar").textContent = "Agregar a la lista";
             document.getElementById("botonCancelar").hidden = true;
         }
 
-        function eliminarProducto(id) {
+        async function eliminarProducto(id) {
             const producto = productos.find(function(elemento) {
                 return elemento.id === id;
             });
+            if (!producto) return;
 
-            if (!producto) {
+            if (!confirm("¿Querés eliminar " + producto.nombre + " de la lista compartida?")) return;
+
+            const { error } = await db.from("compras").delete().eq("id", id);
+            if (error) {
+                mostrarError("No se pudo eliminar el producto: " + error.message);
                 return;
             }
 
-            const confirmar = confirm(
-                "¿Querés eliminar " + producto.nombre + " de la lista?"
-            );
-
-            if (!confirmar) {
-                return;
-            }
-
-            const anteriores = productos;
-
-            productos = productos.filter(function(elemento) {
-                return elemento.id !== id;
-            });
-
-            if (!guardarDatos()) {
-                productos = anteriores;
-                return;
-            }
-
-            if (productoEditando === id) {
-                cancelarEdicion();
-            }
-
-            mostrarProductos();
+            if (productoEditando === id) cancelarEdicion();
+            await cargarProductos();
         }
 
-        document.getElementById("botonCancelar").addEventListener(
-            "click",
-            cancelarEdicion
-        );
-
+        document.getElementById("botonCancelar").addEventListener("click", cancelarEdicion);
         busqueda.addEventListener("input", mostrarProductos);
 
-        mostrarProductos();
+        cargarProductos();
+        // Actualiza la lista periódicamente para reflejar cambios hechos por otros amigos.
+        setInterval(function() {
+            cargarProductos(false);
+        }, 10000);
     </script>
 
 </body>
