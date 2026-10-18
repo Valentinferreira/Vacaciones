@@ -1,0 +1,868 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de compras | La Escapada</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #101820;
+            color: #f4f1e9;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 24px 8%;
+            border-bottom: 1px solid #293640;
+        }
+
+        .logo {
+            color: #78d6bc;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 22px;
+        }
+
+        .volver {
+            display: inline-block;
+            color: #78d6bc;
+            text-decoration: none;
+            margin-bottom: 30px;
+        }
+
+        .encabezado {
+            margin-bottom: 30px;
+        }
+
+        .encabezado h1 {
+            font-size: 32px;
+        }
+
+        .encabezado p {
+            color: #a6b2b8;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        .resumen {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .resumen-card {
+            background: #19252e;
+            border: 1px solid #2b3943;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .resumen-card p {
+            color: #a6b2b8;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .resumen-card h2 {
+            font-size: 23px;
+            overflow-wrap: anywhere;
+        }
+
+        .panel {
+            background: #19252e;
+            border: 1px solid #2b3943;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .panel h2 {
+            font-size: 21px;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .campo {
+            min-width: 0;
+        }
+
+        .campo.completo {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 9px;
+        }
+
+        input, select {
+            width: 100%;
+            min-width: 0;
+            padding: 12px;
+            background: #101820;
+            color: #f4f1e9;
+            border: 1px solid #394953;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid #78d6bc;
+            border-color: transparent;
+        }
+
+        .ayuda {
+            color: #a6b2b8;
+            font-size: 12px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .botones {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .boton {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .principal {
+            background: #78d6bc;
+            color: #101820;
+        }
+
+        .secundario {
+            background: #34434c;
+            color: #f4f1e9;
+        }
+
+        .peligro {
+            background: #512e33;
+            color: #ffd9dc;
+        }
+
+        .boton:hover {
+            filter: brightness(1.12);
+        }
+
+        .barra-lista {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .barra-lista h2 {
+            font-size: 21px;
+        }
+
+        .filtro {
+            max-width: 260px;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+            border: 1px solid #2b3943;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #2b3943;
+            font-size: 13px;
+        }
+
+        th {
+            background: #203039;
+            color: #b9d8d0;
+        }
+
+        td {
+            line-height: 1.5;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr.comprado td {
+            color: #91a39f;
+        }
+
+        tbody tr.comprado .nombre-producto {
+            text-decoration: line-through;
+        }
+
+        .precio {
+            color: #78d6bc;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .estado {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .estado input {
+            width: 17px;
+            height: 17px;
+            accent-color: #78d6bc;
+            cursor: pointer;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 7px;
+        }
+
+        .boton-mini {
+            padding: 7px 10px;
+            background: #34434c;
+            border: none;
+            color: #f4f1e9;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .boton-mini.eliminar {
+            background: #512e33;
+        }
+
+        .vacio {
+            text-align: center;
+            color: #a6b2b8;
+            padding: 35px 15px;
+            line-height: 1.6;
+        }
+
+        .aviso {
+            color: #a6b2b8;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            color: #788992;
+            padding: 30px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 650px) {
+            main {
+                margin-top: 30px;
+            }
+
+            .encabezado h1 {
+                font-size: 27px;
+            }
+
+            .resumen {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .campo.completo {
+                grid-column: auto;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+
+            .barra-lista {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .filtro {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a class="logo" href="index.html">✳ La Escapada</a>
+    </header>
+
+    <main>
+        <a class="volver" href="index.html">← Volver al inicio</a>
+
+        <section class="encabezado">
+            <h1>Lista de compras.</h1>
+            <p>
+                Todo lo que necesitamos para el viaje, organizado en un
+                solo lugar. Agregá productos, actualizá los precios y
+                controlá qué cosas ya compramos.
+            </p>
+        </section>
+
+        <section class="resumen">
+            <div class="resumen-card">
+                <p>Costo total estimado</p>
+                <h2 id="costoTotal">$ 0</h2>
+            </div>
+
+            <div class="resumen-card">
+                <p>Productos en la lista</p>
+                <h2 id="cantidadProductos">0</h2>
+            </div>
+
+            <div class="resumen-card">
+                <p>Productos comprados</p>
+                <h2 id="cantidadComprados">0 de 0</h2>
+            </div>
+        </section>
+
+        <section class="panel" id="panelFormulario">
+            <h2 id="tituloFormulario">Agregar un producto</h2>
+
+            <form id="formulario">
+                <div class="form-grid">
+
+                    <div class="campo completo">
+                        <label for="nombre">Nombre del producto</label>
+                        <input
+                            type="text"
+                            id="nombre"
+                            maxlength="100"
+                            placeholder="Ej.: Agua mineral"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="cantidad">Cantidad de unidades</label>
+                        <input
+                            type="number"
+                            id="cantidad"
+                            min="0.01"
+                            max="100000"
+                            step="any"
+                            placeholder="Ej.: 6"
+                            required
+                        >
+                        <p class="ayuda">¿Cuántos paquetes, botellas o unidades?</p>
+                    </div>
+
+                    <div class="campo">
+                        <label for="contenido">Contenido por unidad</label>
+                        <input
+                            type="number"
+                            id="contenido"
+                            min="0"
+                            max="1000000"
+                            step="any"
+                            placeholder="Ej.: 2"
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="unidad">Unidad de peso o volumen</label>
+                        <select id="unidad">
+                            <option value="Sin especificar">Sin especificar</option>
+                            <option value="g">Gramos (g)</option>
+                            <option value="kg">Kilogramos (kg)</option>
+                            <option value="ml">Mililitros (ml)</option>
+                            <option value="L">Litros (L)</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="precio">Precio por unidad (UYU)</label>
+                        <input
+                            type="number"
+                            id="precio"
+                            min="0"
+                            max="100000000"
+                            step="0.01"
+                            placeholder="Ej.: 85"
+                            required
+                        >
+                        <p class="ayuda">
+                            El total se calcula multiplicando el precio por la cantidad.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="botones">
+                    <button class="boton principal" type="submit" id="botonGuardar">
+                        Agregar a la lista
+                    </button>
+
+                    <button
+                        class="boton secundario"
+                        type="button"
+                        id="botonCancelar"
+                        hidden
+                    >
+                        Cancelar edición
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="barra-lista">
+                <h2>Productos</h2>
+
+                <input
+                    class="filtro"
+                    type="search"
+                    id="busqueda"
+                    placeholder="Buscar producto..."
+                    aria-label="Buscar producto"
+                >
+            </div>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Contenido</th>
+                            <th>Precio unitario</th>
+                            <th>Total</th>
+                            <th>Comprado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="listaProductos"></tbody>
+                </table>
+
+                <p class="vacio" id="vacio">
+                    Todavía no agregaste productos a la lista.
+                </p>
+            </div>
+
+            <p class="aviso">
+                Los precios están expresados en pesos uruguayos.
+                Esta versión guarda los datos en el navegador de este
+                dispositivo, pero no los comparte automáticamente con
+                los otros amigos.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        La Escapada · Enero 2027
+    </footer>
+
+    <script>
+        const CLAVE = "laEscapadaListaCompras";
+
+        let productos = [];
+        let productoEditando = null;
+
+        const formulario = document.getElementById("formulario");
+        const nombre = document.getElementById("nombre");
+        const cantidad = document.getElementById("cantidad");
+        const contenido = document.getElementById("contenido");
+        const unidad = document.getElementById("unidad");
+        const precio = document.getElementById("precio");
+
+        const listaProductos = document.getElementById("listaProductos");
+        const vacio = document.getElementById("vacio");
+        const busqueda = document.getElementById("busqueda");
+
+        const formatoPesos = new Intl.NumberFormat("es-UY", {
+            style: "currency",
+            currency: "UYU",
+            maximumFractionDigits: 2
+        });
+
+        try {
+            const datosGuardados = localStorage.getItem(CLAVE);
+
+            if (datosGuardados) {
+                const datos = JSON.parse(datosGuardados);
+
+                if (
+                    Array.isArray(datos) &&
+                    datos.every(function(producto) {
+                        return producto &&
+                            typeof producto.id === "string" &&
+                            typeof producto.nombre === "string" &&
+                            Number.isFinite(producto.cantidad) &&
+                            Number.isFinite(producto.contenido) &&
+                            Number.isFinite(producto.precio) &&
+                            typeof producto.unidad === "string" &&
+                            typeof producto.comprado === "boolean";
+                    })
+                ) {
+                    productos = datos;
+                }
+            }
+        } catch (error) {
+            alert("No se pudieron cargar los productos guardados.");
+        }
+
+        function guardarDatos() {
+            try {
+                localStorage.setItem(CLAVE, JSON.stringify(productos));
+                return true;
+            } catch (error) {
+                alert("No se pudieron guardar los cambios en este navegador.");
+                return false;
+            }
+        }
+
+        function actualizarResumen() {
+            let total = 0;
+            let comprados = 0;
+
+            productos.forEach(function(producto) {
+                total += producto.cantidad * producto.precio;
+
+                if (producto.comprado) {
+                    comprados++;
+                }
+            });
+
+            document.getElementById("costoTotal").textContent =
+                formatoPesos.format(total);
+
+            document.getElementById("cantidadProductos").textContent =
+                productos.length;
+
+            document.getElementById("cantidadComprados").textContent =
+                comprados + " de " + productos.length;
+        }
+
+        function mostrarProductos() {
+            listaProductos.replaceChildren();
+
+            const texto = busqueda.value.trim().toLowerCase();
+
+            const filtrados = productos.filter(function(producto) {
+                return producto.nombre.toLowerCase().includes(texto);
+            });
+
+            filtrados.forEach(function(producto) {
+                const fila = document.createElement("tr");
+
+                if (producto.comprado) {
+                    fila.classList.add("comprado");
+                }
+
+                function crearCelda(texto) {
+                    const celda = document.createElement("td");
+                    celda.textContent = texto;
+                    return celda;
+                }
+
+                const celdaNombre = crearCelda(producto.nombre);
+                celdaNombre.classList.add("nombre-producto");
+
+                fila.appendChild(celdaNombre);
+                fila.appendChild(crearCelda(String(producto.cantidad)));
+
+                let textoContenido = "—";
+
+                if (producto.contenido > 0) {
+                    textoContenido =
+                        producto.contenido + " " + producto.unidad;
+                }
+
+                fila.appendChild(crearCelda(textoContenido));
+
+                const celdaPrecio = crearCelda(
+                    formatoPesos.format(producto.precio)
+                );
+                celdaPrecio.classList.add("precio");
+                fila.appendChild(celdaPrecio);
+
+                const celdaTotal = crearCelda(
+                    formatoPesos.format(producto.cantidad * producto.precio)
+                );
+                celdaTotal.classList.add("precio");
+                fila.appendChild(celdaTotal);
+
+                const celdaComprado = document.createElement("td");
+                const etiquetaEstado = document.createElement("label");
+                etiquetaEstado.className = "estado";
+
+                const casilla = document.createElement("input");
+                casilla.type = "checkbox";
+                casilla.checked = producto.comprado;
+                casilla.setAttribute(
+                    "aria-label",
+                    "Marcar " + producto.nombre + " como comprado"
+                );
+
+                casilla.addEventListener("change", function() {
+                    const anterior = producto.comprado;
+                    producto.comprado = casilla.checked;
+
+                    if (!guardarDatos()) {
+                        producto.comprado = anterior;
+                    }
+
+                    mostrarProductos();
+                });
+
+                etiquetaEstado.appendChild(casilla);
+                etiquetaEstado.appendChild(
+                    document.createTextNode("Sí")
+                );
+                celdaComprado.appendChild(etiquetaEstado);
+                fila.appendChild(celdaComprado);
+
+                const celdaAcciones = document.createElement("td");
+                const acciones = document.createElement("div");
+                acciones.className = "acciones";
+
+                const botonEditar = document.createElement("button");
+                botonEditar.className = "boton-mini";
+                botonEditar.textContent = "Editar";
+                botonEditar.type = "button";
+
+                botonEditar.addEventListener("click", function() {
+                    editarProducto(producto.id);
+                });
+
+                const botonEliminar = document.createElement("button");
+                botonEliminar.className = "boton-mini eliminar";
+                botonEliminar.textContent = "Eliminar";
+                botonEliminar.type = "button";
+
+                botonEliminar.addEventListener("click", function() {
+                    eliminarProducto(producto.id);
+                });
+
+                acciones.append(botonEditar, botonEliminar);
+                celdaAcciones.appendChild(acciones);
+                fila.appendChild(celdaAcciones);
+
+                listaProductos.appendChild(fila);
+            });
+
+            if (filtrados.length === 0) {
+                vacio.style.display = "block";
+
+                if (productos.length > 0 && texto !== "") {
+                    vacio.textContent = "No se encontraron productos con esa búsqueda.";
+                } else {
+                    vacio.textContent = "Todavía no agregaste productos a la lista.";
+                }
+            } else {
+                vacio.style.display = "none";
+            }
+
+            actualizarResumen();
+        }
+
+        formulario.addEventListener("submit", function(evento) {
+            evento.preventDefault();
+
+            const nombreProducto = nombre.value.trim();
+            const cantidadProducto = Number(cantidad.value);
+            const contenidoProducto = contenido.value.trim() === ""
+                ? 0
+                : Number(contenido.value);
+            const precioProducto = Number(precio.value);
+
+            if (
+                nombreProducto === "" ||
+                !Number.isFinite(cantidadProducto) ||
+                cantidadProducto <= 0 ||
+                !Number.isFinite(contenidoProducto) ||
+                contenidoProducto < 0 ||
+                !Number.isFinite(precioProducto) ||
+                precioProducto < 0
+            ) {
+                alert("Revisá los datos ingresados.");
+                return;
+            }
+
+            if (
+                contenidoProducto > 0 &&
+                unidad.value === "Sin especificar"
+            ) {
+                alert("Elegí la unidad de peso o volumen del producto.");
+                return;
+            }
+
+            const producto = {
+                id: productoEditando || (
+                    Date.now().toString() + Math.random().toString(36).slice(2)
+                ),
+                nombre: nombreProducto,
+                cantidad: cantidadProducto,
+                contenido: contenidoProducto,
+                unidad: unidad.value,
+                precio: precioProducto,
+                comprado: false
+            };
+
+            let nuevosProductos;
+
+            if (productoEditando) {
+                nuevosProductos = productos.map(function(anterior) {
+                    if (anterior.id === productoEditando) {
+                        producto.comprado = anterior.comprado;
+                        return producto;
+                    }
+
+                    return anterior;
+                });
+            } else {
+                nuevosProductos = [...productos, producto];
+            }
+
+            const anteriores = productos;
+            productos = nuevosProductos;
+
+            if (!guardarDatos()) {
+                productos = anteriores;
+                return;
+            }
+
+            cancelarEdicion();
+            mostrarProductos();
+        });
+
+        function editarProducto(id) {
+            const producto = productos.find(function(elemento) {
+                return elemento.id === id;
+            });
+
+            if (!producto) {
+                return;
+            }
+
+            productoEditando = id;
+
+            nombre.value = producto.nombre;
+            cantidad.value = producto.cantidad;
+            contenido.value = producto.contenido > 0
+                ? producto.contenido
+                : "";
+            unidad.value = producto.unidad;
+            precio.value = producto.precio;
+
+            document.getElementById("tituloFormulario").textContent =
+                "Editar producto";
+
+            document.getElementById("botonGuardar").textContent =
+                "Guardar cambios";
+
+            document.getElementById("botonCancelar").hidden = false;
+
+            document.getElementById("panelFormulario").scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+
+        function cancelarEdicion() {
+            formulario.reset();
+            productoEditando = null;
+
+            document.getElementById("tituloFormulario").textContent =
+                "Agregar un producto";
+
+            document.getElementById("botonGuardar").textContent =
+                "Agregar a la lista";
+
+            document.getElementById("botonCancelar").hidden = true;
+        }
+
+        function eliminarProducto(id) {
+            const producto = productos.find(function(elemento) {
+                return elemento.id === id;
+            });
+
+            if (!producto) {
+                return;
+            }
+
+            const confirmar = confirm(
+                "¿Querés eliminar " + producto.nombre + " de la lista?"
+            );
+
+            if (!confirmar) {
+                return;
+            }
+
+            const anteriores = productos;
+
+            productos = productos.filter(function(elemento) {
+                return elemento.id !== id;
+            });
+
+            if (!guardarDatos()) {
+                productos = anteriores;
+                return;
+            }
+
+            if (productoEditando === id) {
+                cancelarEdicion();
+            }
+
+            mostrarProductos();
+        }
+
+        document.getElementById("botonCancelar").addEventListener(
+            "click",
+            cancelarEdicion
+        );
+
+        busqueda.addEventListener("input", mostrarProductos);
+
+        mostrarProductos();
+    </script>
+
+</body>
+</html>
