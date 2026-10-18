@@ -1,0 +1,496 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfiles | La Escapada</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #101820;
+            color: #f4f1e9;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 24px 8%;
+            border-bottom: 1px solid #293640;
+        }
+
+        .logo {
+            color: #78d6bc;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 45px auto;
+            padding: 0 22px;
+        }
+
+        .volver {
+            display: inline-block;
+            color: #78d6bc;
+            text-decoration: none;
+            margin-bottom: 30px;
+        }
+
+        .encabezado {
+            margin-bottom: 30px;
+        }
+
+        .encabezado h1 {
+            font-size: 32px;
+        }
+
+        .encabezado p {
+            color: #a6b2b8;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        .perfiles {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .tarjeta {
+            background: #19252e;
+            border: 1px solid #2b3943;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .foto {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 18px;
+            border: 3px solid #78d6bc;
+            background: #263b43;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-size: 35px;
+        }
+
+        .foto img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nombre {
+            font-size: 19px;
+            margin-bottom: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .apodo {
+            color: #a6b2b8;
+            font-size: 13px;
+            margin-bottom: 22px;
+            overflow-wrap: anywhere;
+        }
+
+        .editar {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #78d6bc;
+            background: transparent;
+            color: #78d6bc;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .editar:hover {
+            background: #24443f;
+        }
+
+        .formulario {
+            display: none;
+            margin-top: 30px;
+            padding: 28px;
+            background: #19252e;
+            border: 1px solid #35594f;
+            border-radius: 15px;
+        }
+
+        .formulario h2 {
+            margin-bottom: 25px;
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 9px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #101820;
+            color: #f4f1e9;
+            border: 1px solid #394953;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: 2px solid #78d6bc;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .guardar, .cancelar {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .guardar {
+            background: #78d6bc;
+            color: #101820;
+        }
+
+        .cancelar {
+            background: #34434c;
+            color: #f4f1e9;
+        }
+
+        .aviso {
+            color: #a6b2b8;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #788992;
+            font-size: 12px;
+        }
+
+        @media (max-width: 800px) {
+            .perfiles {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 520px) {
+            .perfiles {
+                grid-template-columns: 1fr;
+            }
+
+            .encabezado h1 {
+                font-size: 27px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a class="logo" href="index.html">✳ La Escapada</a>
+    </header>
+
+    <main>
+        <a class="volver" href="index.html">← Volver al inicio</a>
+
+        <section class="encabezado">
+            <h1>Los del viaje.</h1>
+            <p>
+                Cinco amigos, un destino y muchas historias por delante.
+                Personalizá los perfiles del grupo.
+            </p>
+        </section>
+
+        <section class="perfiles" id="perfiles"></section>
+
+        <section class="formulario" id="editor">
+            <h2 id="tituloEditor">Editar perfil</h2>
+
+            <form id="formularioPerfil">
+                <div class="campo">
+                    <label for="nombre">Nombre</label>
+                    <input
+                        type="text"
+                        id="nombre"
+                        maxlength="40"
+                        placeholder="Nombre del amigo"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="apodo">Apodo</label>
+                    <input
+                        type="text"
+                        id="apodo"
+                        maxlength="40"
+                        placeholder="Ej.: El Peluca"
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="foto">Foto de perfil</label>
+                    <input
+                        type="file"
+                        id="foto"
+                        accept="image/*"
+                    >
+                </div>
+
+                <div class="acciones">
+                    <button class="guardar" type="submit">
+                        Guardar cambios
+                    </button>
+
+                    <button
+                        class="cancelar"
+                        type="button"
+                        id="cancelar"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+
+            <p class="aviso">
+                Las fotos se guardan en este navegador. Para evitar ocupar
+                demasiado espacio, utilizá imágenes pequeñas.
+            </p>
+        </section>
+
+        <p class="aviso">
+            Los cambios se guardan en el navegador de este dispositivo.
+            Todavía no se sincronizan con los otros integrantes del viaje.
+        </p>
+    </main>
+
+    <footer>
+        La Escapada · Enero 2027
+    </footer>
+
+    <script>
+        const clave = "laEscapadaPerfiles";
+
+        const perfilesIniciales = [
+            { nombre: "Amigo 1", apodo: "", foto: "" },
+            { nombre: "Amigo 2", apodo: "", foto: "" },
+            { nombre: "Amigo 3", apodo: "", foto: "" },
+            { nombre: "Amigo 4", apodo: "", foto: "" },
+            { nombre: "Amigo 5", apodo: "", foto: "" }
+        ];
+
+        let perfiles = perfilesIniciales;
+        let perfilEditando = -1;
+        let fotoNueva = "";
+
+        try {
+            const guardados = localStorage.getItem(clave);
+
+            if (guardados) {
+                const datos = JSON.parse(guardados);
+
+                if (
+                    Array.isArray(datos) &&
+                    datos.length === 5 &&
+                    datos.every(function(perfil) {
+                        return perfil &&
+                            typeof perfil.nombre === "string" &&
+                            typeof perfil.apodo === "string" &&
+                            typeof perfil.foto === "string";
+                    })
+                ) {
+                    perfiles = datos;
+                }
+            }
+        } catch (error) {
+            console.log("No se pudieron cargar los perfiles guardados.");
+        }
+
+        const contenedor = document.getElementById("perfiles");
+        const editor = document.getElementById("editor");
+        const formulario = document.getElementById("formularioPerfil");
+        const entradaFoto = document.getElementById("foto");
+
+        function mostrarPerfiles() {
+            contenedor.replaceChildren();
+
+            perfiles.forEach(function(perfil, indice) {
+                const tarjeta = document.createElement("article");
+                tarjeta.className = "tarjeta";
+
+                const foto = document.createElement("div");
+                foto.className = "foto";
+
+                if (perfil.foto) {
+                    const imagen = document.createElement("img");
+                    imagen.src = perfil.foto;
+                    imagen.alt = "Foto de " + perfil.nombre;
+                    foto.appendChild(imagen);
+                } else {
+                    foto.textContent = "♙";
+                }
+
+                const nombre = document.createElement("h2");
+                nombre.className = "nombre";
+                nombre.textContent = perfil.nombre;
+
+                const apodo = document.createElement("p");
+                apodo.className = "apodo";
+                apodo.textContent = perfil.apodo || "Sin apodo";
+
+                const boton = document.createElement("button");
+                boton.className = "editar";
+                boton.textContent = "Editar perfil";
+
+                boton.addEventListener("click", function() {
+                    editarPerfil(indice);
+                });
+
+                tarjeta.append(foto, nombre, apodo, boton);
+                contenedor.appendChild(tarjeta);
+            });
+        }
+
+        function editarPerfil(indice) {
+            perfilEditando = indice;
+            fotoNueva = "";
+
+            document.getElementById("tituloEditor").textContent =
+                "Editar " + perfiles[indice].nombre;
+
+            document.getElementById("nombre").value =
+                perfiles[indice].nombre;
+
+            document.getElementById("apodo").value =
+                perfiles[indice].apodo;
+
+            entradaFoto.value = "";
+            editor.style.display = "block";
+
+            editor.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+
+        entradaFoto.addEventListener("change", function() {
+            const archivo = entradaFoto.files[0];
+
+            if (!archivo) {
+                fotoNueva = "";
+                return;
+            }
+
+            if (!archivo.type.startsWith("image/")) {
+                alert("Seleccioná un archivo de imagen válido.");
+                entradaFoto.value = "";
+                fotoNueva = "";
+                return;
+            }
+
+            if (archivo.size > 2 * 1024 * 1024) {
+                alert("La foto debe pesar menos de 2 MB.");
+                entradaFoto.value = "";
+                fotoNueva = "";
+                return;
+            }
+
+            const lector = new FileReader();
+
+            lector.onload = function() {
+                fotoNueva = lector.result;
+            };
+
+            lector.readAsDataURL(archivo);
+        });
+
+        formulario.addEventListener("submit", function(evento) {
+            evento.preventDefault();
+
+            if (perfilEditando < 0) {
+                return;
+            }
+
+            const nombre =
+                document.getElementById("nombre").value.trim();
+
+            const apodo =
+                document.getElementById("apodo").value.trim();
+
+            if (!nombre) {
+                alert("El nombre no puede quedar vacío.");
+                return;
+            }
+
+            const anterior = perfiles[perfilEditando];
+
+            const actualizado = {
+                nombre: nombre,
+                apodo: apodo,
+                foto: fotoNueva || anterior.foto
+            };
+
+            const copia = perfiles.slice();
+            copia[perfilEditando] = actualizado;
+
+            try {
+                localStorage.setItem(clave, JSON.stringify(copia));
+                perfiles = copia;
+            } catch (error) {
+                alert(
+                    "No se pudieron guardar los cambios. " +
+                    "Probá con una foto más pequeña."
+                );
+                return;
+            }
+
+            mostrarPerfiles();
+            editor.style.display = "none";
+            perfilEditando = -1;
+        });
+
+        document.getElementById("cancelar").addEventListener(
+            "click",
+            function() {
+                editor.style.display = "none";
+                formulario.reset();
+                fotoNueva = "";
+                perfilEditando = -1;
+            }
+        );
+
+        mostrarPerfiles();
+    </script>
+
+</body>
+</html>
