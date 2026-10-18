@@ -1,348 +1,178 @@
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar aporte | La Escapada</title>
-
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #101820;
-            color: #f4f1e9;
-            min-height: 100vh;
-        }
-
-        header {
-            padding: 24px 8%;
-            border-bottom: 1px solid #293640;
-        }
-
-        .logo {
-            color: #78d6bc;
-            font-size: 24px;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        main {
-            max-width: 850px;
-            margin: 45px auto;
-            padding: 0 22px;
-        }
-
-        .volver {
-            display: inline-block;
-            color: #78d6bc;
-            text-decoration: none;
-            margin-bottom: 30px;
-        }
-
-        .volver:hover {
-            text-decoration: underline;
-        }
-
-        .encabezado {
-            margin-bottom: 30px;
-        }
-
-        .encabezado p {
-            color: #a6b2b8;
-            margin-top: 12px;
-            line-height: 1.6;
-        }
-
-        h1 {
-            font-size: 32px;
-        }
-
-        .panel {
-            background: #19252e;
-            border: 1px solid #2b3943;
-            border-radius: 16px;
-            padding: 28px;
-        }
-
-        .panel h2 {
-            font-size: 20px;
-            margin-bottom: 25px;
-        }
-
-        .campo {
-            margin-bottom: 22px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 9px;
-            font-size: 14px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #394953;
-            border-radius: 8px;
-            background: #101820;
-            color: #f4f1e9;
-            font-size: 15px;
-        }
-
-        input:focus, select:focus {
-            outline: 2px solid #78d6bc;
-            border-color: transparent;
-        }
-
-        .boton {
-            width: 100%;
-            padding: 14px;
-            background: #78d6bc;
-            color: #101820;
-            font-size: 15px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .boton:hover {
-            background: #a0ead5;
-        }
-
-        .aviso {
-            color: #a6b2b8;
-            font-size: 12px;
-            line-height: 1.6;
-            margin-top: 18px;
-        }
-
-        .mensaje {
-            display: none;
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            background: #214c49;
-            color: #d0e9e1;
-            line-height: 1.5;
-        }
-
-        .historial {
-            margin-top: 25px;
-        }
-
-        .historial h2 {
-            margin-bottom: 15px;
-        }
-
-        .movimiento {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 17px;
-            margin-bottom: 10px;
-            background: #19252e;
-            border: 1px solid #2b3943;
-            border-radius: 10px;
-        }
-
-        .movimiento p {
-            color: #a6b2b8;
-            font-size: 13px;
-            margin-top: 6px;
-        }
-
-        .monto {
-            color: #78d6bc;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        .vacio {
-            color: #a6b2b8;
-            font-size: 14px;
-            padding: 15px 0;
-        }
-
-        footer {
-            text-align: center;
-            color: #788992;
-            padding: 30px;
-            font-size: 12px;
-        }
-
-        @media (max-width: 600px) {
-            main {
-                margin-top: 30px;
-            }
-
-            .panel {
-                padding: 22px;
-            }
-
-            h1 {
-                font-size: 27px;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #101820; color: #f4f1e9; min-height: 100vh; }
+        header { padding: 24px 8%; border-bottom: 1px solid #293640; }
+        .logo { color: #78d6bc; font-size: 24px; font-weight: bold; text-decoration: none; }
+        main { max-width: 850px; margin: 45px auto; padding: 0 22px; }
+        .volver { display: inline-block; color: #78d6bc; text-decoration: none; margin-bottom: 30px; }
+        .volver:hover { text-decoration: underline; }
+        .encabezado { margin-bottom: 30px; }
+        .encabezado p { color: #a6b2b8; margin-top: 12px; line-height: 1.6; }
+        h1 { font-size: 32px; }
+        .panel { background: #19252e; border: 1px solid #2b3943; border-radius: 16px; padding: 28px; }
+        .panel h2 { font-size: 20px; margin-bottom: 25px; }
+        .campo { margin-bottom: 22px; }
+        label { display: block; margin-bottom: 9px; font-size: 14px; }
+        input, select { width: 100%; padding: 13px; border: 1px solid #394953; border-radius: 8px; background: #101820; color: #f4f1e9; font-size: 15px; }
+        input:focus, select:focus { outline: 2px solid #78d6bc; border-color: transparent; }
+        .boton { width: 100%; padding: 14px; background: #78d6bc; color: #101820; font-size: 15px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
+        .boton:hover { background: #a0ead5; }
+        .boton:disabled { opacity: .6; cursor: wait; }
+        .aviso { color: #a6b2b8; font-size: 12px; line-height: 1.6; margin-top: 18px; }
+        .mensaje { display: none; margin-top: 20px; padding: 15px; border-radius: 8px; background: #214c49; color: #d0e9e1; line-height: 1.5; overflow-wrap: anywhere; }
+        .mensaje.error { background: #542e34; color: #ffe0e3; }
+        .historial { margin-top: 25px; }
+        .historial h2 { margin-bottom: 15px; }
+        .movimiento { display: flex; justify-content: space-between; gap: 15px; padding: 17px; margin-bottom: 10px; background: #19252e; border: 1px solid #2b3943; border-radius: 10px; }
+        .movimiento p { color: #a6b2b8; font-size: 13px; margin-top: 6px; }
+        .monto { color: #78d6bc; font-weight: bold; white-space: nowrap; }
+        .vacio { color: #a6b2b8; font-size: 14px; padding: 15px 0; }
+        footer { text-align: center; color: #788992; padding: 30px; font-size: 12px; }
+        @media (max-width: 600px) { main { margin-top: 30px; } .panel { padding: 22px; } h1 { font-size: 27px; } .movimiento { flex-direction: column; } .monto { white-space: normal; } }
     </style>
 </head>
-
 <body>
-
-    <header>
-        <a class="logo" href="index.html">✳ La Escapada</a>
-    </header>
-
+    <header><a class="logo" href="index.html">✳ La Escapada</a></header>
     <main>
         <a class="volver" href="index.html">← Volver al inicio</a>
-
         <section class="encabezado">
             <h1>Fondo común</h1>
-            <p>
-                Registrá los aportes de los cinco amigos y llevá un control
-                del dinero que juntamos para las vacaciones.
-            </p>
+            <p>Registrá los aportes de los cinco amigos y llevá un control del dinero que juntamos para las vacaciones.</p>
         </section>
-
         <section class="panel">
             <h2>Registrar un nuevo aporte</h2>
-
             <form id="formulario">
-                <div class="campo">
-                    <label for="persona">¿Quién realiza el aporte?</label>
-                    <select id="persona" required>
-                        <option value="">Seleccionar amigo</option>
-                        <option value="Amigo 1">Amigo 1</option>
-                        <option value="Amigo 2">Amigo 2</option>
-                        <option value="Amigo 3">Amigo 3</option>
-                        <option value="Amigo 4">Amigo 4</option>
-                        <option value="Amigo 5">Amigo 5</option>
-                    </select>
-                </div>
-
-                <div class="campo">
-                    <label for="monto">Monto aportado (UYU)</label>
-                    <input
-                        type="number"
-                        id="monto"
-                        min="1"
-                        step="0.01"
-                        placeholder="Ej.: 1500"
-                        required
-                    >
-                </div>
-
-                <div class="campo">
-                    <label for="descripcion">Descripción del aporte</label>
-                    <input
-                        type="text"
-                        id="descripcion"
-                        maxlength="100"
-                        placeholder="Ej.: Primer aporte"
-                    >
-                </div>
-
-                <button class="boton" type="submit">
-                    Registrar aporte
-                </button>
+                <div class="campo"><label for="persona">¿Quién realiza el aporte?</label><select id="persona" required><option value="">Cargando amigos...</option></select></div>
+                <div class="campo"><label for="monto">Monto aportado (UYU)</label><input type="number" id="monto" min="1" step="0.01" placeholder="Ej.: 1500" required></div>
+                <div class="campo"><label for="descripcion">Descripción del aporte</label><input type="text" id="descripcion" maxlength="100" placeholder="Ej.: Primer aporte"></div>
+                <button class="boton" id="botonGuardar" type="submit">Registrar aporte</button>
             </form>
-
-            <p class="aviso">
-                Esta versión es una demostración: los movimientos no se
-                conservan al recargar la página ni se comparten entre
-                dispositivos.
-            </p>
-
-            <div class="mensaje" id="mensaje"></div>
+            <p class="aviso">Los aportes se guardan en línea y se comparten con quienes accedan a esta página.</p>
+            <div class="mensaje" id="mensaje" role="status" aria-live="polite"></div>
         </section>
-
-        <section class="historial">
-            <h2>Últimos movimientos</h2>
-            <p class="vacio" id="vacio">Todavía no hay aportes registrados.</p>
-            <div id="lista"></div>
-        </section>
+        <section class="historial"><h2>Últimos movimientos</h2><p class="vacio" id="vacio">Cargando aportes...</p><div id="lista"></div></section>
     </main>
-
-    <footer>
-        La Escapada · Enero 2027
-    </footer>
-
+    <footer>La Escapada · Enero 2027</footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        const SUPABASE_URL = "https://yjtyzikqcikkcbhpkqeq.supabase.co";
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TZeoCfMQ0hDTVLQn75EvPg_w3EApzkZ";
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
         const formulario = document.getElementById("formulario");
+        const selectorPersona = document.getElementById("persona");
         const lista = document.getElementById("lista");
         const vacio = document.getElementById("vacio");
         const mensaje = document.getElementById("mensaje");
+        const botonGuardar = document.getElementById("botonGuardar");
+        let nombresPorId = {};
 
-        let aportes = [];
-
-        formulario.addEventListener("submit", function(evento) {
-            evento.preventDefault();
-
-            const persona = document.getElementById("persona").value;
-            const monto = Number(document.getElementById("monto").value);
-            const descripcion =
-                document.getElementById("descripcion").value.trim();
-
-            if (!persona || !Number.isFinite(monto) || monto <= 0) {
-                return;
-            }
-
-            const aporte = {
-                persona: persona,
-                monto: monto,
-                descripcion: descripcion || "Aporte al fondo común"
-            };
-
-            aportes.unshift(aporte);
-            mostrarAportes();
-
-            mensaje.textContent =
-                "Aporte agregado a la demostración correctamente.";
+        function mostrarMensaje(texto, esError) {
+            mensaje.textContent = texto;
+            mensaje.classList.toggle("error", Boolean(esError));
             mensaje.style.display = "block";
+        }
 
-            formulario.reset();
-        });
+        async function cargarPersonas() {
+            const { data, error } = await db.from("perfiles").select("id,nombre").order("id");
+            if (error) {
+                selectorPersona.innerHTML = '<option value="">No se pudieron cargar los amigos</option>';
+                mostrarMensaje("No se pudieron cargar los perfiles: " + error.message, true);
+                return false;
+            }
+            selectorPersona.replaceChildren(new Option("Seleccionar amigo", ""));
+            nombresPorId = {};
+            data.forEach(function(persona) {
+                nombresPorId[persona.id] = persona.nombre;
+                selectorPersona.add(new Option(persona.nombre, String(persona.id)));
+            });
+            return true;
+        }
 
-        function mostrarAportes() {
-            lista.replaceChildren();
-
-            if (aportes.length === 0) {
+        async function cargarAportes() {
+            const { data, error } = await db.from("aportes")
+                .select("id,persona_id,monto,descripcion,creado_en,perfiles(nombre)")
+                .order("creado_en", { ascending: false });
+            if (error) {
+                vacio.textContent = "No se pudieron cargar los aportes. " + error.message;
                 vacio.style.display = "block";
                 return;
             }
+            mostrarAportes(data || []);
+        }
 
+        function mostrarAportes(aportes) {
+            lista.replaceChildren();
+            if (aportes.length === 0) {
+                vacio.textContent = "Todavía no hay aportes registrados.";
+                vacio.style.display = "block";
+                return;
+            }
             vacio.style.display = "none";
-
             aportes.forEach(function(aporte) {
                 const movimiento = document.createElement("div");
                 movimiento.className = "movimiento";
-
                 const detalles = document.createElement("div");
                 const nombre = document.createElement("strong");
                 const descripcion = document.createElement("p");
+                const fecha = document.createElement("p");
                 const monto = document.createElement("span");
-
-                nombre.textContent = aporte.persona;
-                descripcion.textContent = aporte.descripcion;
+                const nombrePerfil = aporte.perfiles && aporte.perfiles.nombre
+                    ? aporte.perfiles.nombre
+                    : (nombresPorId[aporte.persona_id] || "Amigo");
+                nombre.textContent = nombrePerfil;
+                descripcion.textContent = aporte.descripcion || "Aporte al fondo común";
+                fecha.textContent = aporte.creado_en
+                    ? new Date(aporte.creado_en).toLocaleString("es-UY", { dateStyle: "short", timeStyle: "short" })
+                    : "";
                 monto.className = "monto";
-                monto.textContent = aporte.monto.toLocaleString("es-UY", {
-                    style: "currency",
-                    currency: "UYU"
-                });
-
+                monto.textContent = Number(aporte.monto).toLocaleString("es-UY", { style: "currency", currency: "UYU" });
                 detalles.append(nombre, descripcion);
+                if (fecha.textContent) detalles.appendChild(fecha);
                 movimiento.append(detalles, monto);
                 lista.appendChild(movimiento);
             });
         }
-    </script>
 
+        formulario.addEventListener("submit", async function(evento) {
+            evento.preventDefault();
+            const personaId = Number(selectorPersona.value);
+            const monto = Number(document.getElementById("monto").value);
+            const descripcion = document.getElementById("descripcion").value.trim();
+            if (!personaId || !Number.isFinite(monto) || monto <= 0) {
+                mostrarMensaje("Elegí un amigo e ingresá un monto mayor que cero.", true);
+                return;
+            }
+            botonGuardar.disabled = true;
+            botonGuardar.textContent = "Guardando...";
+            const { error } = await db.from("aportes").insert({
+                persona_id: personaId,
+                monto: monto,
+                descripcion: descripcion || "Aporte al fondo común"
+            });
+            botonGuardar.disabled = false;
+            botonGuardar.textContent = "Registrar aporte";
+            if (error) {
+                mostrarMensaje("No se pudo guardar el aporte: " + error.message, true);
+                return;
+            }
+            mostrarMensaje("Aporte guardado y compartido correctamente.", false);
+            formulario.reset();
+            await cargarAportes();
+        });
+
+        async function iniciar() {
+            vacio.textContent = "Cargando aportes...";
+            const personasOk = await cargarPersonas();
+            if (personasOk) await cargarAportes();
+        }
+        iniciar();
+    </script>
 </body>
 </html>
